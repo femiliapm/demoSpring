@@ -4,14 +4,21 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.myproject.demoSpring.dto.BiodataDto;
+import com.myproject.demoSpring.dto.DetailBiodataDto;
 import com.myproject.demoSpring.dto.PersonDto;
+import com.myproject.demoSpring.entity.DetailBiodataEntity;
 import com.myproject.demoSpring.entity.PersonEntity;
+import com.myproject.demoSpring.repository.DetailBiodataRepository;
 import com.myproject.demoSpring.repository.PersonRepository;
 
 @RestController
@@ -19,6 +26,9 @@ import com.myproject.demoSpring.repository.PersonRepository;
 public class PersonController {
 	@Autowired
 	private PersonRepository personRepository;
+
+	@Autowired
+	private DetailBiodataRepository detailRepository;
 
 	@GetMapping("/get-all") // localhost:8500/person/get-all
 	public List<PersonEntity> getPerson() {
@@ -33,12 +43,93 @@ public class PersonController {
 		return ResponseEntity.ok(personEntities);
 	}
 
+//	GET MAPPING BY ID
+	@GetMapping("/get-name-by-id/{id}")
+	public ResponseEntity<?> getById(@PathVariable Integer id) {
+		PersonDto dto = new PersonDto();
+		dto.setFirstName(personRepository.findFirstNameById(id));
+		dto.setMessage("data berhasil");
+		dto.setStatus("200");
+		return ResponseEntity.ok(dto);
+	}
+
 	@PostMapping("/post-person")
-	public ResponseEntity<?> insertPerson(@RequestBody PersonDto dto) {
-		PersonEntity personEntity = new PersonEntity();
+	public ResponseEntity<?> insertPerson(@RequestBody BiodataDto dto) {
+		PersonEntity personEntity = convertToPersonEntity(dto);
+		personRepository.save(personEntity);
+		return ResponseEntity.ok(personEntity);
+	}
+
+//	UPDATE DATA
+	@PutMapping("/update-person/{idPerson}")
+	public ResponseEntity<?> update(@PathVariable Integer idPerson, @RequestBody PersonDto dto) {
+		PersonEntity personEntity = personRepository.findById(idPerson).get();
 		personEntity.setFirstName(dto.getFirstName());
 		personEntity.setLastName(dto.getLastName());
 		personRepository.save(personEntity);
 		return ResponseEntity.ok(personEntity);
+	}
+
+//	DELETE DATA
+	@DeleteMapping("/delete/{idPerson}")
+	public ResponseEntity<?> delete(@PathVariable Integer idPerson) {
+		PersonEntity personEntity = personRepository.findById(idPerson).get();
+		personRepository.delete(personEntity);
+		return ResponseEntity.ok(personEntity);
+	}
+
+//	API DETAIL BIODATA
+	@GetMapping("/get-detail")
+	public ResponseEntity<?> getDetail() {
+		List<DetailBiodataEntity> detailBiodataEntities = detailRepository.findAll();
+		return ResponseEntity.ok(detailBiodataEntities);
+	}
+
+	@PostMapping("/post-detail")
+	public ResponseEntity<?> postDetail(@RequestBody BiodataDto dto) {
+		DetailBiodataEntity detailBiodataEntity = convertToDetailBiodataEntity(dto);
+		detailRepository.save(detailBiodataEntity);
+		return ResponseEntity.ok(detailBiodataEntity);
+	}
+
+	@PostMapping("/post-detail-person")
+	public ResponseEntity<?> insertDetail(@RequestBody BiodataDto dto) {
+		DetailBiodataEntity detailBiodataEntity = convertToDetailBiodataEntity(dto);
+		PersonEntity personEntity = personRepository.findById(dto.getPersonId()).get();
+
+		detailBiodataEntity.setPersonEntity(personEntity);
+		detailRepository.save(detailBiodataEntity);
+		return ResponseEntity.ok(detailBiodataEntity);
+	}
+
+	@PostMapping("/insert-all")
+	public ResponseEntity<?> insertAll(@RequestBody BiodataDto dto) {
+		PersonEntity personEntity = convertToPersonEntity(dto);
+		DetailBiodataEntity detailBiodataEntity = convertToDetailBiodataEntity(dto);
+
+		personRepository.save(personEntity);
+		detailBiodataEntity.setPersonEntity(personEntity);
+		detailRepository.save(detailBiodataEntity);
+		return ResponseEntity.ok(detailBiodataEntity);
+	}
+
+//	METHOD CONVERT
+	public PersonEntity convertToPersonEntity(BiodataDto dto) {
+		PersonEntity personEntity = new PersonEntity();
+
+		personEntity.setFirstName(dto.getFirstName());
+		personEntity.setLastName(dto.getLastName());
+		return personEntity;
+	}
+
+	public DetailBiodataEntity convertToDetailBiodataEntity(BiodataDto dto) {
+		DetailBiodataEntity detailBiodataEntity = new DetailBiodataEntity();
+		
+		detailBiodataEntity.setDomisili(dto.getDomisili());
+		detailBiodataEntity.setHobi(dto.getHobi());
+		detailBiodataEntity.setJenisKelamin(dto.getJenisKelamin());
+		detailBiodataEntity.setTanggalLahir(dto.getTanggalLahir());
+		detailBiodataEntity.setUsia(dto.getUsia());
+		return detailBiodataEntity;
 	}
 }

@@ -12,4 +12,12 @@ import com.myproject.demoSpring.entity.PersonEntity;
 public interface PersonRepository extends JpaRepository<PersonEntity, Integer> {
 	@Query(value = "select * from person_entity where first_name = ?", nativeQuery = true)
 	List<PersonEntity> findByFirstName(String firstName);
+
+	List<PersonEntity> findByLastName(String lastName);
+
+	@Query(value = "select first_name from person_entity where id = ?", nativeQuery = true)
+	String findFirstNameById(Integer id);
+
+	@Query(value = "select id from person_entity where id = ?", nativeQuery = true)
+	Integer findIdById(Integer id);
 }

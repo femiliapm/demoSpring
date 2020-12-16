@@ -5,7 +5,9 @@ import java.sql.Date;
 import lombok.Data;
 
 @Data
-public class DetailBiodataDto {
+public class BiodataDto {
+	private String firstName;
+	private String lastName;
 	private String domisili;
 	private Integer usia;
 	private Date tanggalLahir;
