@@ -3,6 +3,7 @@ package com.myproject.demoSpring.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.myproject.demoSpring.dto.BiodataDto;
 import com.myproject.demoSpring.dto.DetailBiodataDto;
 import com.myproject.demoSpring.dto.PersonDto;
+import com.myproject.demoSpring.dto.StatusMessageDto;
 import com.myproject.demoSpring.entity.DetailBiodataEntity;
 import com.myproject.demoSpring.entity.PersonEntity;
 import com.myproject.demoSpring.repository.DetailBiodataRepository;
@@ -58,6 +60,26 @@ public class PersonController {
 		PersonEntity personEntity = convertToPersonEntity(dto);
 		personRepository.save(personEntity);
 		return ResponseEntity.ok(personEntity);
+	}
+
+	@PostMapping("/post-person-status")
+	public ResponseEntity<?> insertPerson2(@RequestBody BiodataDto dto) {
+		if (dto.getNik().length() != 16) {
+			StatusMessageDto<PersonEntity> result = new StatusMessageDto<>();
+			result.setStatus(HttpStatus.BAD_REQUEST.value());
+			result.setMessage("NIK tidak 16 angka");
+			result.setData(null);
+			return ResponseEntity.badRequest().body(result);
+		} else {
+			PersonEntity personEntity = convertToPersonEntity(dto);
+			personRepository.save(personEntity);
+
+			StatusMessageDto<PersonEntity> result = new StatusMessageDto<>();
+			result.setStatus(HttpStatus.OK.value());
+			result.setMessage("Success!");
+			result.setData(personEntity);
+			return ResponseEntity.ok(result);
+		}
 	}
 
 //	UPDATE DATA
@@ -119,12 +141,13 @@ public class PersonController {
 
 		personEntity.setFirstName(dto.getFirstName());
 		personEntity.setLastName(dto.getLastName());
+		personEntity.setNik(dto.getNik());
 		return personEntity;
 	}
 
 	public DetailBiodataEntity convertToDetailBiodataEntity(BiodataDto dto) {
 		DetailBiodataEntity detailBiodataEntity = new DetailBiodataEntity();
-		
+
 		detailBiodataEntity.setDomisili(dto.getDomisili());
 		detailBiodataEntity.setHobi(dto.getHobi());
 		detailBiodataEntity.setJenisKelamin(dto.getJenisKelamin());

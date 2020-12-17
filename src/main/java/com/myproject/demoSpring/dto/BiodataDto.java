@@ -8,6 +8,7 @@ import lombok.Data;
 public class BiodataDto {
 	private String firstName;
 	private String lastName;
+	private String nik;
 	private String domisili;
 	private Integer usia;
 	private Date tanggalLahir;

@@ -14,15 +14,26 @@ public class PersonEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
-	
+
 	@Column(name = "first_name", length = 50, nullable = false)
 	private String firstName;
-	
+
 	@Column(name = "last_name", length = 50, nullable = false)
 	private String lastName;
 
+	@Column(name = "nik", length = 16, nullable = false)
+	private String nik;
+
 	public Integer getId() {
 		return id;
+	}
+
+	public String getNik() {
+		return nik;
+	}
+
+	public void setNik(String nik) {
+		this.nik = nik;
 	}
 
 	public void setId(Integer id) {
@@ -45,11 +56,12 @@ public class PersonEntity {
 		this.lastName = lastName;
 	}
 
-	public PersonEntity(Integer id, String firstName, String lastName) {
+	public PersonEntity(Integer id, String firstName, String lastName, String nik) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.nik = nik;
 	}
 
 	public PersonEntity() {
