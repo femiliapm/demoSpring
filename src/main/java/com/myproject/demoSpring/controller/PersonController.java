@@ -1,5 +1,6 @@
 package com.myproject.demoSpring.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +23,26 @@ import com.myproject.demoSpring.entity.DetailBiodataEntity;
 import com.myproject.demoSpring.entity.PersonEntity;
 import com.myproject.demoSpring.repository.DetailBiodataRepository;
 import com.myproject.demoSpring.repository.PersonRepository;
+import com.myproject.demoSpring.service.BiodataServiceImpl;
+import com.myproject.demoSpring.service.PersonServiceImpl;
 
 @RestController
 @RequestMapping("/person") // localhost:8500/person
 public class PersonController {
-	@Autowired
 	private PersonRepository personRepository;
+	private DetailBiodataRepository detailRepository;
+	private PersonServiceImpl service;
+	private BiodataServiceImpl biodataService;
 
 	@Autowired
-	private DetailBiodataRepository detailRepository;
+	public PersonController(PersonRepository personRepository, DetailBiodataRepository detailRepository,
+			PersonServiceImpl service, BiodataServiceImpl biodataService) {
+		super();
+		this.personRepository = personRepository;
+		this.detailRepository = detailRepository;
+		this.service = service;
+		this.biodataService = biodataService;
+	}
 
 	@GetMapping("/get-all") // localhost:8500/person/get-all
 	public List<PersonEntity> getPerson() {
@@ -56,10 +68,16 @@ public class PersonController {
 	}
 
 	@PostMapping("/post-person")
-	public ResponseEntity<?> insertPerson(@RequestBody BiodataDto dto) {
-		PersonEntity personEntity = convertToPersonEntity(dto);
-		personRepository.save(personEntity);
-		return ResponseEntity.ok(personEntity);
+	public ResponseEntity<?> insertPerson(@RequestBody List<BiodataDto> dto) {
+//		List<PersonEntity> listPersonEntity = 
+
+		for (BiodataDto e : dto) {
+//			PersonEntity personEntity = convertToPersonEntity(e);
+//			personRepository.save(personEntity);
+			service.insertPerson(e);
+		}
+
+		return ResponseEntity.ok(dto);
 	}
 
 	@PostMapping("/post-person-status")
@@ -126,12 +144,14 @@ public class PersonController {
 
 	@PostMapping("/insert-all")
 	public ResponseEntity<?> insertAll(@RequestBody BiodataDto dto) {
-		PersonEntity personEntity = convertToPersonEntity(dto);
-		DetailBiodataEntity detailBiodataEntity = convertToDetailBiodataEntity(dto);
+//		PersonEntity personEntity = convertToPersonEntity(dto);
+//		DetailBiodataEntity detailBiodataEntity = convertToDetailBiodataEntity(dto);
+//
+//		personRepository.save(personEntity);
+//		detailBiodataEntity.setPersonEntity(personEntity);
+//		detailRepository.save(detailBiodataEntity);
 
-		personRepository.save(personEntity);
-		detailBiodataEntity.setPersonEntity(personEntity);
-		detailRepository.save(detailBiodataEntity);
+		DetailBiodataEntity detailBiodataEntity = biodataService.insertAll(dto);
 		return ResponseEntity.ok(detailBiodataEntity);
 	}
 
@@ -142,6 +162,7 @@ public class PersonController {
 		personEntity.setFirstName(dto.getFirstName());
 		personEntity.setLastName(dto.getLastName());
 		personEntity.setNik(dto.getNik());
+		personEntity.setKodePerson(dto.getKodePerson());
 		return personEntity;
 	}
 

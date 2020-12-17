@@ -20,4 +20,6 @@ public interface PersonRepository extends JpaRepository<PersonEntity, Integer> {
 
 	@Query(value = "select id from person_entity where id = ?", nativeQuery = true)
 	Integer findIdById(Integer id);
+	
+	PersonEntity findByKodePerson(String kodePerson);
 }

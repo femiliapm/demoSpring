@@ -15,4 +15,5 @@ public class BiodataDto {
 	private String hobi;
 	private String jenisKelamin;
 	private Integer personId;
+	private String kodePerson;
 }

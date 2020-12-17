@@ -23,6 +23,17 @@ public class PersonEntity {
 
 	@Column(name = "nik", length = 16, nullable = false)
 	private String nik;
+	
+	@Column(name = "kode_person", unique = true)
+	private String kodePerson;
+
+	public String getKodePerson() {
+		return kodePerson;
+	}
+
+	public void setKodePerson(String kodePerson) {
+		this.kodePerson = kodePerson;
+	}
 
 	public Integer getId() {
 		return id;
@@ -56,12 +67,13 @@ public class PersonEntity {
 		this.lastName = lastName;
 	}
 
-	public PersonEntity(Integer id, String firstName, String lastName, String nik) {
+	public PersonEntity(Integer id, String firstName, String lastName, String nik, String kodePerson) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.nik = nik;
+		this.kodePerson = kodePerson;
 	}
 
 	public PersonEntity() {
