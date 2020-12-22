@@ -108,10 +108,12 @@ public class PersonController {
 
 //	UPDATE DATA
 	@PutMapping("/update-person/{idPerson}")
-	public ResponseEntity<?> update(@PathVariable Integer idPerson, @RequestBody PersonDto dto) {
+	public ResponseEntity<?> update(@PathVariable Integer idPerson, @RequestBody BiodataDto dto) {
 		PersonEntity personEntity = personRepository.findById(idPerson).get();
 		personEntity.setFirstName(dto.getFirstName());
 		personEntity.setLastName(dto.getLastName());
+		personEntity.setNik(dto.getNik());
+		personEntity.setKodePerson(dto.getKodePerson());
 		personRepository.save(personEntity);
 		return ResponseEntity.ok(personEntity);
 	}

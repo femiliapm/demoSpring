@@ -54,7 +54,8 @@ var tablePerson = {
                             data: null,
                             render: function(data, type, row) {
                                 console.log(data)
-                                return "<button class='btn-primary' onclick=formPerson.setEditData('" + data.id + "')>Edit</button>"
+                                return "<button class='btn btn-warning' onclick=formPerson.setEditData('" + data.id + "')>Edit</button>" + " " + 
+                                		"<button class='btn btn-danger' onclick=formPerson.delete('" + data.id + "')>Delete</button>"
                             }
                         }]
                     });
@@ -92,8 +93,53 @@ var formPerson = {
 		$.ajax({
 			method:'get',
 			url:'/person/by-id/' + id,
+			contentType: 'application/json',
+			type: 'json',
 			success: function(res) {
 				console.log(res)
+				$('#id').val(res.id)
+				$('#firstName').val(res.firstName)
+				$('#lastName').val(res.lastName)
+				$('#nik').val(res.nik)
+				$('#kodePerson').val(res.kodePerson)
+				
+				$('#btn-save').off('click').on('click', function() {
+					formPerson.update(res.id);
+					tablePerson.getPerson;
+						$('#btn-save').off('click').on('click', function() {
+							formPerson.save();
+						})
+				})
+			}
+		})
+	},
+	
+	update: function(id) {
+		var person = {}
+		person["id"] = $('#id').val();
+		person["firstName"] = $('#firstName').val();
+		person["lastName"] = $('#lastName').val();
+		person["nik"] = $('#nik').val();
+		person["kodePerson"] = $('#kodePerson').val();
+		
+		$.ajax({
+			method:'put',
+			url:'/person/update-person/' + id,
+			contentType:'application/json',
+			data: JSON.stringify(person),
+			success: function(res) {
+				console.log(res)
+			}
+		})			
+	},
+	
+	delete: function(id) {
+		$.ajax({
+			method: 'delete',
+			url: '/person/delete/' + id,
+			success: function(res) {
+				alert('Deleted!');
+				location.reload();
 			}
 		})
 	}
