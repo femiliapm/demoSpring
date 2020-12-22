@@ -57,6 +57,12 @@ public class PersonController {
 		return ResponseEntity.ok(personEntities);
 	}
 
+	@GetMapping("/by-id/{id}")
+	public ResponseEntity<?> getAll(@PathVariable Integer id) {
+		PersonEntity personEntities = personRepository.findById(id).get();
+		return ResponseEntity.ok(personEntities);
+	}
+
 //	GET MAPPING BY ID
 	@GetMapping("/get-name-by-id/{id}")
 	public ResponseEntity<?> getById(@PathVariable Integer id) {
